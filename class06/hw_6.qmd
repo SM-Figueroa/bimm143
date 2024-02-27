@@ -1,0 +1,62 @@
+---
+title: "HW_6"
+author: "Sawyer (PID: A16335277)"
+date: 01/28/24
+format: pdf
+---
+
+## Generalizing R code using a function
+
+The original code looks like this:
+
+```{r}
+#install.packages("bio3d")
+library(bio3d)
+s1 <- read.pdb("4AKE") # kinase with drug
+s2 <- read.pdb("1AKE") # kinase no drug
+s3 <- read.pdb("1E4Y") # kinase with drug
+s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
+s3.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s1.b <- s1.chainA$atom$b
+s2.b <- s2.chainA$atom$b
+s3.b <- s3.chainA$atom$b
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
+```
+
+We can generalize this code so that we don't have to copy and paste the previous code every time we want to analyze a protein.
+
+Here is the function to do that:
+
+```{r}
+analyze_protein_drug_interaction <- function(protein) {
+  # this function takes in the protein name as input
+  
+  # read in the PDB object for the input protein
+  s <- read.pdb(protein)
+  
+  # trim the PDB object to contain a subset
+  s.chainA <- trim.pdb(s, chain="A", elety="CA")
+  
+  # select desired B-factor data series
+  s.b <- s.chainA$atom$b
+  
+  # lineplot with standard error and y labeled
+  plotb3(s.b, sse=s.chainA, typ="l", ylab="Bfactor")
+  
+  # this plot serves as the sole output of the function
+}
+```
+
+Let's test the function on the previous inputs.
+
+```{r}
+# we can use the function by typing the function name and providing the protein name (text) as an argument
+analyze_protein_drug_interaction("4AKE")
+analyze_protein_drug_interaction("1AKE")
+analyze_protein_drug_interaction("1E4Y")
+```
+
+Looks like it works!
