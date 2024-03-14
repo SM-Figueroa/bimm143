@@ -11,7 +11,7 @@ Class work from W24 for [BIMM143 at UC San Diego](https://bioboot.github.io/bimm
 
 - Class 8: [Unsupervised Learning](https://github.com/SM-Figueroa/bimm143/blob/main/class08/class08.md).
 
-- Class 9: [Halloween Candy Mini-Project](https://github.com/SM-Figueroa/bimm143/blob/main/class09/class09.md).
+- Class 9: [Halloween Candy Mini-Project](https://github.com/SM-Figueroa/bimm143/blob/main/class09/class9.md).
 
 - Class 10: [Structural Bioinformatics](https://github.com/SM-Figueroa/bimm143/blob/main/class10/class10.md).
 
