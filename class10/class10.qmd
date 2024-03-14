@@ -1,0 +1,160 @@
+---
+title: "class10: Structural Bioinformatics (pt. 1)"
+author: "Sawyer (PID: A16335277)"
+format: pdf
+---
+
+# The PDB database
+
+Here we examine the size and composition of the main database of biomolecular structures - the PDB.
+
+Get a CSV file 
+
+```{r}
+pdbstats <- read.csv("pdb_stats.csv", row.names = 1)
+head(pdbstats)
+```
+
+
+> Q1: What percentage of structures in the PDB are solved by X-Ray and Electron Microscopy.
+
+My pdbstats data frame has numbers with commas in them. This may cause us problems. Let's see:
+
+```{r}
+pdbstats$X.ray
+```
+
+```{r}
+as.numeric(pdbstats$X.ray)
+```
+
+```{r}
+x <- "22,200"
+as.numeric(x) + 1
+```
+
+We found a function called `gsub()` now we can figure out how it works
+
+```{r}
+x <- "22,200"
+as.numeric(gsub(",", "", x))
+```
+
+I can turn this snipet into a function that I can use for every column in the table.
+
+```{r}
+commasum <- function(x) {
+  sum(as.numeric(gsub(",", "", x)))
+}
+
+commasum(pdbstats$X.ray)
+```
+
+Apply across all columns
+
+```{r}
+totals <- apply(pdbstats, 2, commasum)
+```
+
+```{r}
+round(totals/totals["Total"] * 100, 2)
+```
+
+84.54% of the structures are solved using X-ray and 8.72% of the structures are solved using Electron Microscopy.
+
+> Q2: What proportion of structures in the PDB are protein?
+
+```{r}
+as.numeric(gsub(",", "", pdbstats[1,'Total']))/commasum(pdbstats[,'Total'])
+```
+
+0.87 of all structures are protein.
+
+> Q3: Type HIV in the PDB website search box on the home page and determine how many HIV-1 protease structures are in the current PDB?
+
+5 structures showed up on the database under the HIV-1 search keyword.
+
+> Q. What fraction of all molecule structures are stored in the PDB database?
+
+```{r}
+(215684/249751891 * 100)
+```
+
+# 2. Visualizing Protein Structure
+
+We will learn the basics of Mol* (mol-star) homepage:
+https://molstar.org/viewer/
+
+We will play with PDB code 1HSG
+
+> Q4: Water molecules normally have 3 atoms. Why do we see just one atom per water molecule in this structure?
+
+Hydrogen atoms are too small to be picked up by the limited resolution of the measurement.
+
+> Q5: There is a critical “conserved” water molecule in the binding site. Can you identify this water molecule? What residue number does this water molecule have
+
+This water molecule has residue number 308.
+
+
+![](1HSG.png)
+
+
+> Q6: Generate and save a figure clearly showing the two distinct chains of HIV-protease along with the ligand. You might also consider showing the catalytic residues ASP 25 in each chain and the critical water (we recommend “Ball & Stick” for these side-chains). Add this figure to your Quarto document.
+
+> Discussion Topic: Can you think of a way in which indinavir, or even larger ligands and substrates, could enter the binding site?
+
+It's possible that if the flaps surrounding the binding site open then larger ligands or substrates could enter the site.
+
+Show the ASP 25 amino acids:
+
+![HIV-Pr with a bound inhibitor showing the two important ASP 25 amino acids](1HSG_asp.png)
+
+## Back to R and working with PDB structures
+
+Predict the dynamics (flexibility) of an important protein:
+
+```{r}
+library(bio3d)
+
+hiv <- read.pdb("1hsg")
+hiv
+```
+
+> Q7: How many amino acid residues are there in this pdb object?
+
+There are 198 amino acid residues in this pdb object.
+
+> Q8: Name one of the two non-protein residues?
+
+HOH is one of the two non-protein residues.
+
+> Q9: How many protein chains are in this structure?
+
+There are 2 protein chains in this structure.
+
+```{r}
+head(hiv$atom)
+```
+
+```{r}
+pdbseq(hiv)
+```
+
+Here we will do a Normal Mode Analysis (NMA) to predict functional motions of a kinase protein.
+
+```{r}
+adk <- read.pdb("6s36")
+adk
+```
+
+```{r}
+modes <- nma(adk)
+plot(modes)
+```
+Make a "movie" called a trajectory of the predicted motions:
+
+```{r}
+mktrj(modes, file="adk_m7.pdb")
+```
+
+Then I can open this file in Mol*....
