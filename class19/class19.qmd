@@ -1,0 +1,32 @@
+---
+title: "class19: Cancer mutation mini-project"
+author: "Sawyer (PID: A16335277)"
+format: html
+---
+
+```{r}
+# load in fasta file in current dir
+library(bio3d)
+
+seqs <- read.fasta("A16335277_mutant_seq.fa")
+```
+
+```{r}
+# find differences in two sequences in fasta file
+
+inds = which(conserv(seqs) < 1)
+print(inds)
+
+seqs$ali[,inds]
+```
+
+```{r}
+```
+```{r}
+# select 724-1005 amino acids in mutant sequence
+seqs$ali[,724:1005]
+```
+
+```{r}
+```
+
